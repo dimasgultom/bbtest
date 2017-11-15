@@ -1,55 +1,52 @@
 @extends('layouts.app')
 @section('content')
-<h1 class="text-center">List of games with order and filter feature</h1>
 <div class="row content">
-    <div class="col-sm-9">
-    @if(count($games)>0)
-    order by: <select ng-model="selectedOrder" ng-options="option for option in options"></select>
-    @foreach($games as $game)
-    
-    <div class="row content">
-        <div class="col-sm-3">Some Image here</div>
-        <div class="col-sm-4"><strong>{{$game->title}}</strong></div>
-        <div class="col-sm-3">{{$game->category}}</div>
-        <div class="col-sm-2 text-center"><a href="/games/{{$game->id}}" class="btn btn-primary btn-xs">Detail</a></div>
-    </div>
+      <div class="col-sm-9">
+        <h1 align="center">Game List</h1>
+        <hr>
+          order by: <select ng-model="selectedOrder" ng-options="option for option in options"></select>
+          <div ng-repeat="x in games | filter:{title: findtitel} | customFilter:(category|filter:{on:true}) | orderBy:selectedOrder" class="row" >
+            <div class="col-sm-2 text-center"><strong><%x.id%></strong></div>
+            <div class="col-sm-4 text-center"><strong><%x.title%></strong></div>
+			<div class="col-sm-2 text-left"><%x.price%></div>
+            <div class="col-sm-2"><%x.category%></div>
+            <div class="col-sm-2 text-center"><a href="#" class="btn btn-primary btn-xs">Detail</a></div>
+          </div>
+      </div>
 
-    @endforeach
-    {{$games->links()}}
-    @else
-    <p>Server Under Maintenance</p>
-    @endif
-    </div>
-    <div class="col-sm-3 sidenav">
+      <div class="col-sm-3 sidenav">
         <div>
-            <!--filter title-->
-            <input type="text" ng-model="findtitel" placeholder="Search">
-        </div><br>
+          <!--filter title-->
+          <input type="text" ng-model="findtitel" placeholder="Search">
+        </div>
         <div>
           Game Cattegory
           <div align="left" ng-repeat="tech in category">
-            <label><input type="checkbox" ng-model="tech.on">category</label>
+            <label><input type="checkbox" ng-model="tech.on"><%tech.category%></label>
           </div>
         </div>
-    </div>
+        <br>
+        <div>
+          Avg. Rate
+          <div align="left">
+            <a href="#">4 Star &amp; Up</a><br>
+            <a href="#">3 Star &amp; Up</a><br>
+            <a href="#">2 Star &amp; Up</a><br>
+            <a href="#">1 Star &amp; Up</a><br>
+          </div>
+        </div>
+      </div>
 </div>
 @endsection
 
 @section('js')
 <script>
-// Get the modal.
-var modal = document.getElementById('id01');
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
-}
-
-angular.module('app', [])
+angular.module('app', [], function($interpolateProvider) {
+        $interpolateProvider.startSymbol('<%');
+        $interpolateProvider.endSymbol('%>');
+    })
 .controller('ctrl', function($scope) {
-  $scope.options = ['title','rate'];
+  $scope.options = ['title','price'];
   $scope.category = [
     {category: "Action Adventure", on: false},
     {category: "Racing", on: false},
@@ -62,7 +59,7 @@ angular.module('app', [])
     {category: "Simulation", on: false},
     {category: "Turn Based", on: false},
     {category: "Strategy",on: false}];
-    $scope.games = $data;
+  $scope.games = <?php echo $games; ?>;
 })
 .filter('customFilter', function() {
   return function(input, titles) {

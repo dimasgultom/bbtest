@@ -15,11 +15,11 @@ class GamesController extends Controller
      */
     public function index()
     {
-        $games = Game::orderBy('id','asc')->paginate(5);
-        return view('pages/list')->with('games', $games);
-        /*$games = DB::select('SELECT * FROM games');
-        $games = json_encode($games, JSON_PRETTY_PRINT);
+        /*$games = Game::orderBy('id','asc')->paginate(5);
         return view('pages/list')->with('games', $games);*/
+        $games = DB::select('SELECT * FROM games');
+        $games = json_encode($games, JSON_PRETTY_PRINT);
+        return view('pages/list')->with('games', $games);
     }
 
     /**
